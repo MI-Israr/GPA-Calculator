@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Calculate your GPA easily with our online GPA calculator. Enter your subjects, credit hours, and GPA to get accurate results."
+    />
+    <meta
+      name="keywords"
+      content="CGPA, cpga, gpa calculator, GPA, GPA Calculator, Online GPA Calculator, Calculate GPA, Student GPA Tool"
+    />
+    <meta name="author" content="Your Name" />
+    <title>GPA Calculator - Calculate Your GPA Online</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 20px;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      h1,
+      h2 {
+        color: #333;
+      }
+      label {
+        font-weight: bold;
+      }
+      input,
+      button {
+        margin: 10px 0;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+      button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      button:hover {
+        background-color: #218838;
+      }
+      table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: center;
+      }
+      th {
+        background-color: #007bff;
+        color: white;
+      }
+      input[type="text"],
+      input[type="number"] {
+        width: 90%;
+        padding: 5px;
+      }
+      .gpa-container,
+      .cgpa-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin-top: 20px;
+      }
+      #result,
+      #cgpaResult {
+        font-size: 22px;
+        font-weight: bold;
+        color: #d9534f;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Online GPA & CGPA Calculator</h1>
+    <div class="container">
+      <h2>Calculate Your GPA</h2>
+      <label for="numSubjects">Enter Number of Subjects: </label>
+      <input
+        type="number"
+        id="numSubjects"
+        min="1"
+        onkeydown="checkEnter(event)"
+      />
+      <button onclick="generateTable()">Generate</button>
+
+      <table id="subjectsTable" style="display: none">
+        <thead>
+          <tr>
+            <th>Subject Name</th>
+            <th>Credit Hours</th>
+            <th>GPA</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+
+      <div class="gpa-container" style="display: none" id="gpaContainer">
+        <button onclick="calculateGPA()">Calculate GPA</button>
+        <span id="result"></span>
+      </div>
+    </div>
+
+    <div class="container">
+      <h2>Calculate Your CGPA</h2>
+      <label for="numSemesters">Enter Number of Semesters: </label>
+      <input type="number" id="numSemesters" min="1" />
+      <button onclick="generateCGPAInputs()">Generate</button>
+      <div id="cgpaInputs"></div>
+      <div class="cgpa-container">
+        <button onclick="calculateCGPA()" style="display: none" id="cgpaButton">
+          Calculate CGPA
+        </button>
+        <span id="cgpaResult"></span>
+      </div>
+    </div>
+
+    <script>
+      function checkEnter(event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          generateTable();
+        }
+      }
+
+      function generateTable() {
+        const numSubjects = document.getElementById("numSubjects").value;
+        const table = document.getElementById("subjectsTable");
+        const tableBody = document.getElementById("tableBody");
+        const gpaContainer = document.getElementById("gpaContainer");
+
+        tableBody.innerHTML = "";
+        gpaContainer.style.display = "none";
+        if (numSubjects > 0) {
+          table.style.display = "table";
+          gpaContainer.style.display = "flex";
+        } else {
+          table.style.display = "none";
+          gpaContainer.style.display = "none";
+          return;
+        }
+
+        for (let i = 0; i < numSubjects; i++) {
+          let row = `<tr>
+                    <td><input type="text" placeholder="Subject Name"></td>
+                    <td><input type="number" min="1" placeholder="Credit Hours"></td>
+                    <td><input type="number" step="0.01" min="0" max="4" placeholder="GPA"></td>
+                </tr>`;
+          tableBody.innerHTML += row;
+        }
+      }
+
+      function calculateGPA() {
+        const rows = document.querySelectorAll("#subjectsTable tbody tr");
+        let totalCredits = 0,
+          totalPoints = 0;
+
+        rows.forEach((row) => {
+          const creditHours =
+            parseFloat(row.cells[1].querySelector("input").value) || 0;
+          const gpa =
+            parseFloat(row.cells[2].querySelector("input").value) || 0;
+
+          totalCredits += creditHours;
+          totalPoints += creditHours * gpa;
+        });
+
+        const finalGPA =
+          totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : 0;
+        document.getElementById(
+          "result"
+        ).innerText = `Your GPA is: ${finalGPA}`;
+        document.getElementById("result").style.display = "inline";
+      }
+
+      function generateCGPAInputs() {
+        const numSemesters = document.getElementById("numSemesters").value;
+        const cgpaInputs = document.getElementById("cgpaInputs");
+        const cgpaButton = document.getElementById("cgpaButton");
+
+        cgpaInputs.innerHTML = "";
+        for (let i = 0; i < numSemesters; i++) {
+          cgpaInputs.innerHTML += `<input type="number" step="0.01" min="0" max="4" placeholder="Semester ${
+            i + 1
+          } GPA">`;
+        }
+        cgpaButton.style.display = "block";
+      }
+
+      function calculateCGPA() {
+        const gpaInputs = document.querySelectorAll("#cgpaInputs input");
+        let totalGPA = 0;
+        gpaInputs.forEach(
+          (input) => (totalGPA += parseFloat(input.value) || 0)
+        );
+        const finalCGPA = (totalGPA / gpaInputs.length).toFixed(2);
+        const cgpaResult = document.getElementById("cgpaResult");
+        cgpaResult.innerText = `Your CGPA is: ${finalCGPA}`;
+        // Add this line to make the result visible
+        cgpaResult.style.display = "block";
+      }
+    </script>
+  </body>
+</html>
